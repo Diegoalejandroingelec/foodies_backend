@@ -34,5 +34,5 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-*.json
+foodies-4b9ec-firebase-adminsdk-jp4gd-34c1428aa2.json
 *.env
