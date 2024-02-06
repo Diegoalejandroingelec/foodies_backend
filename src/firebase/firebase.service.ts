@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
-
+import { v4 as uuidv4 } from 'uuid';
 dotenv.config();
 
 @Injectable()
@@ -38,6 +38,41 @@ export class FirebaseService {
     // Update the document with arrayUnion
     await docRef.update({
       [fieldName]: this.FieldValue.arrayUnion(data),
+    });
+  }
+  async postNewFieldToDocument(collection, id, data, fieldName) {
+    const docRef = this.firestore.collection(collection).doc(id);
+
+    await docRef.update({
+      [fieldName]: data,
+    });
+  }
+  async createUserRecommendations(userRecommendationData, userId) {
+    const collectionRef = this.firestore.collection('Food_Recommendation');
+    const recommendationRef = await collectionRef.add(
+      userRecommendationData.recommendation,
+    );
+
+    const userRef = this.firestore.collection('Users').doc(userId);
+    const newId = uuidv4();
+    await userRef.update({
+      food_recommendations: this.FieldValue.arrayUnion({
+        food_recommendation_id: recommendationRef,
+        quantifier: userRecommendationData.quantifier,
+        quantity: userRecommendationData.quantity,
+        id: newId,
+      }),
+    });
+  }
+  async addRecommendationToFavorites(userId, recommendationId) {
+    const recommendationRef = this.firestore
+      .collection('Food_Recommendation')
+      .doc(recommendationId);
+
+    const userRef = this.firestore.collection('Users').doc(userId);
+
+    await userRef.update({
+      favourites: this.FieldValue.arrayUnion(recommendationRef),
     });
   }
 }

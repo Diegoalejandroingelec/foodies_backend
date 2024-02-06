@@ -4,8 +4,8 @@ import { FirebaseService } from '../firebase/firebase.service';
 @Injectable()
 export class UsersService {
   constructor(private readonly firebaseService: FirebaseService) {}
-  async getUserInformation(user_id): Promise<any> {
-    const User = this.firebaseService.getDocumentbyId('Users', user_id);
+  async getUserInformation(userId): Promise<any> {
+    const User = this.firebaseService.getDocumentbyId('Users', userId);
     const UserSnapshot = await User.get();
 
     const userData = UserSnapshot.data();
@@ -38,16 +38,55 @@ export class UsersService {
 
       userData.favourites[i] = favourites_info.data();
     }
+    for (const key in userData.dietary_control) {
+      const recommendation_id = userData.dietary_control[key];
+      let mealFound;
+      userData.food_recommendations.forEach((element) => {
+        if (element.id === recommendation_id) {
+          mealFound = element;
+        }
+      });
+      userData.dietary_control[key] = mealFound;
+    }
 
     return userData;
   }
 
-  async updatePastPrompts(user_id, data) {
+  async updatePastPrompts(userId, data) {
     await this.firebaseService.appendElementToField(
       'Users',
-      user_id,
+      userId,
       data,
       'past_prompts',
+    );
+  }
+
+  async postPastPrompts(userId, data) {
+    await this.firebaseService.postNewFieldToDocument(
+      'Users',
+      userId,
+      data,
+      'past_prompts',
+    );
+  }
+  async createUserRecommendations(userId, userRecommendationData) {
+    await this.firebaseService.createUserRecommendations(
+      userRecommendationData,
+      userId,
+    );
+  }
+  async addToFavorites(userId, recommendationId) {
+    await this.firebaseService.addRecommendationToFavorites(
+      userId,
+      recommendationId,
+    );
+  }
+  async createDietaryControl(userId, data) {
+    await this.firebaseService.postNewFieldToDocument(
+      'Users',
+      userId,
+      data,
+      'dietary_control',
     );
   }
 }

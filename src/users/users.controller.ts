@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FirebaseService } from '../firebase/firebase.service';
 
@@ -13,12 +13,41 @@ export class UsersController {
     );
     return { msg: 'success', data: userData };
   }
-  @Post('update_past_prompts')
+  @Put('update_past_prompts')
   async updatePastPrompts(@Req() request: any): Promise<any> {
     await this.UsersService.updatePastPrompts(
       request.body.id,
       request.body.data,
     );
+    return { msg: 'successful information update' };
+  }
+  @Post('post_past_prompts')
+  async postPastPrompts(@Req() request: any): Promise<any> {
+    await this.UsersService.postPastPrompts(request.body.id, request.body.data);
     return { msg: 'successful information post' };
+  }
+  @Post('create_recommendations')
+  async createRecommendations(@Req() request: any): Promise<any> {
+    await this.UsersService.createUserRecommendations(
+      request.body.id,
+      request.body.data,
+    );
+    return { msg: 'Recommendation created successfully' };
+  }
+  @Post('add_to_favorites')
+  async addToFavorites(@Req() request: any): Promise<any> {
+    await this.UsersService.addToFavorites(
+      request.body.id,
+      request.body.recommendationId,
+    );
+    return { msg: 'Recommendation added to favorites successfully' };
+  }
+  @Post('create_dietary_control')
+  async createDietaryControl(@Req() request: any): Promise<any> {
+    await this.UsersService.createDietaryControl(
+      request.body.id,
+      request.body.data,
+    );
+    return { msg: 'dietary control created successfully' };
   }
 }
