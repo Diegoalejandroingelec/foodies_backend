@@ -4,9 +4,10 @@ import { ArtificialIntelligenceService } from 'src/AI/ai.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly firebaseService: FirebaseService,
-              private readonly artificialIntelligenceService:ArtificialIntelligenceService
-            ) {}
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly artificialIntelligenceService: ArtificialIntelligenceService,
+  ) {}
   async getUserInformation(userId): Promise<any> {
     const User = this.firebaseService.getDocumentbyId('Users', userId);
     const UserSnapshot = await User.get();
@@ -74,7 +75,7 @@ export class UsersService {
   }
   async createUserRecommendations(userId, userRecommendationData) {
     const result = await this.artificialIntelligenceService.runRespFoodie();
-    return result
+    return result;
     /*
     await this.firebaseService.createUserRecommendations(
       userRecommendationData,
