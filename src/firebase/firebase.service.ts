@@ -75,4 +75,16 @@ export class FirebaseService {
       favourites: this.FieldValue.arrayUnion(recommendationRef),
     });
   }
+
+  async createDocuments(collectionName: string, dataArray: any[]) {
+    const batch = this.firestore.batch();
+
+    dataArray.forEach((data) => {
+      const docRef = this.firestore.collection(collectionName).doc();
+      batch.set(docRef, data);
+    });
+
+    await batch.commit();
+  }
+
 }

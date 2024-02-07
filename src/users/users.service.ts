@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { ArtificialIntelligenceService } from 'src/AI/ai.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(private readonly firebaseService: FirebaseService,
+              private readonly artificialIntelligenceService:ArtificialIntelligenceService
+            ) {}
   async getUserInformation(userId): Promise<any> {
     const User = this.firebaseService.getDocumentbyId('Users', userId);
     const UserSnapshot = await User.get();
@@ -70,10 +73,13 @@ export class UsersService {
     );
   }
   async createUserRecommendations(userId, userRecommendationData) {
+    const result = await this.artificialIntelligenceService.runRespFoodie();
+    return result
+    /*
     await this.firebaseService.createUserRecommendations(
       userRecommendationData,
       userId,
-    );
+    );*/
   }
   async addToFavorites(userId, recommendationId) {
     await this.firebaseService.addRecommendationToFavorites(

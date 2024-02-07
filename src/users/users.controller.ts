@@ -28,11 +28,11 @@ export class UsersController {
   }
   @Post('create_recommendations')
   async createRecommendations(@Req() request: any): Promise<any> {
-    await this.UsersService.createUserRecommendations(
+    const result=await this.UsersService.createUserRecommendations(
       request.body.id,
       request.body.data,
     );
-    return { msg: 'Recommendation created successfully' };
+    return { msg: 'Recommendation created successfully',data: result};
   }
   @Post('add_to_favorites')
   async addToFavorites(@Req() request: any): Promise<any> {
