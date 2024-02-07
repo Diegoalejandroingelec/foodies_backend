@@ -30,7 +30,6 @@ export class UsersController {
   async createRecommendations(@Req() request: any): Promise<any> {
     const result = await this.UsersService.createUserRecommendations(
       request.body.id,
-      request.body.data,
     );
     return { msg: 'Recommendation created successfully', data: result };
   }
