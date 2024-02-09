@@ -75,14 +75,34 @@ export class UsersService {
       'past_prompts',
     );
   }
-  async createUserRecommendations(userId, userRecommendationData) {
-    const result = await this.artificialIntelligenceService.runRespFoodie();
-    return result;
-    /*
-    await this.firebaseService.createUserRecommendations(
-      userRecommendationData,
-      userId,
-    );*/
+  async createUserRecommendations(
+    userId,
+    forbiddenFood,
+    favoriteFood,
+    UserInformation,
+  ) {
+    const User = this.firebaseService.getDocumentbyId('Users', userId);
+    const UserSnapshot = await User.get();
+    const userData = UserSnapshot.data();
+
+    const recommendations =
+      await this.artificialIntelligenceService.runRespFoodie(
+        userData.age,
+        userData.gender,
+        userData.weight,
+        userData.height,
+        forbiddenFood,
+        favoriteFood,
+        UserInformation,
+      );
+
+    for (const recommendation of recommendations) {
+      console.log(recommendation);
+      await this.firebaseService.createUserRecommendations(
+        recommendation,
+        userId,
+      );
+    }
   }
   async addToFavorites(userId, recommendationId) {
     await this.firebaseService.addRecommendationToFavorites(

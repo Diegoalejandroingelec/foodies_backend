@@ -26,7 +26,7 @@ export class FirebaseService {
 
   // Example method to get Firestore
   getDocumentbyId(collection, id) {
-    let db = this.firebaseAdmin.firestore();
+    const db = this.firebaseAdmin.firestore();
     return db.collection(collection).doc(id);
   }
   async appendElementToField(collection, id, data, fieldName) {
@@ -49,17 +49,17 @@ export class FirebaseService {
   }
   async createUserRecommendations(userRecommendationData, userId) {
     const collectionRef = this.firestore.collection('Food_Recommendation');
-    const recommendationRef = await collectionRef.add(
-      userRecommendationData.recommendation,
-    );
+    const portionInfo = userRecommendationData.portion;
+    delete userRecommendationData.portion;
+    const recommendationRef = await collectionRef.add(userRecommendationData);
 
     const userRef = this.firestore.collection('Users').doc(userId);
     const newId = uuidv4();
+    console.log(portionInfo);
     await userRef.update({
       food_recommendations: this.FieldValue.arrayUnion({
         food_recommendation_id: recommendationRef,
-        quantifier: userRecommendationData.quantifier,
-        quantity: userRecommendationData.quantity,
+        portion: portionInfo,
         id: newId,
       }),
     });
@@ -86,5 +86,4 @@ export class FirebaseService {
 
     await batch.commit();
   }
-
 }
