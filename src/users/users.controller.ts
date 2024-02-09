@@ -50,4 +50,13 @@ export class UsersController {
     );
     return { msg: 'dietary control created successfully' };
   }
+
+  @Get('get_nearby_restaurants')
+  async restaurantsNearMe(@Req() request: any): Promise<any> {
+    const result = await this.UsersService.getNearbyRestaurants(
+      request.body.food,
+      request.body.location,
+    );
+    return { msg: "Restaurants found!" , data: result};
+  }
 }
