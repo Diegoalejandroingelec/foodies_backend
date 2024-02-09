@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Injectable } from '@nestjs/common';
-const genAI = new GoogleGenerativeAI('AIzaSyCj1SG26D8ifRrTiTn6h0LTivKlAS1G4Mo');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 @Injectable()
 export class ArtificialIntelligenceService {
   constructor() {}
@@ -34,7 +34,15 @@ export class ArtificialIntelligenceService {
   };
 
   // recommends 10 food based on user preference
-  Personalized_Recommendrun = async () => {
+  Personalized_Recommendrun = async (
+    age,
+    gender,
+    weight,
+    height,
+    forbiddenFood,
+    favoriteFood,
+    UserInformation,
+  ) => {
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     console.log('Running..... 🏃‍♂️');
@@ -56,8 +64,7 @@ export class ArtificialIntelligenceService {
       // },
     });
 
-    const msg =
-      'Hello I am from Colombia, I like savory, mild food and especially local food that I can make without to many effort. I hate oily and fried foods. I cannot eat pork and I am alergic to garlic and nuts';
+    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat.`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
@@ -112,7 +119,7 @@ export class ArtificialIntelligenceService {
         {
           role: 'user',
           parts:
-          "You are a Nutrition expert, and recommends food to the user and how to make it. You always respond with a JSON response[⚠️ strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. . name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile.procedure: List the cooking steps in a numbered format, starting with step 1. ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients.",
+            "You are a Nutrition expert, and recommends food to the user and how to make it. You always respond with a JSON response[⚠️ strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. . name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile.procedure: List the cooking steps in a numbered format, starting with step 1. ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients.",
         },
         {
           role: 'model',
@@ -163,11 +170,27 @@ export class ArtificialIntelligenceService {
     };
   };
 
-  runRespFoodie = async () => {
+  runRespFoodie = async (
+    age,
+    gender,
+    weight,
+    height,
+    forbiddenFood,
+    favoriteFood,
+    UserInformation,
+  ) => {
     // 1. Call the Personalized_Recommendrun() function
 
     const recom_jtext_retry = this.retry(this.Personalized_Recommendrun);
-    const recom_jtext = await recom_jtext_retry();
+    const recom_jtext = await recom_jtext_retry(
+      age,
+      gender,
+      weight,
+      height,
+      forbiddenFood,
+      favoriteFood,
+      UserInformation,
+    );
     console.log('Moving forward ....🚗');
     // 2. Pass the result to getFoodNames()
     const foodNames = await this.getFoodNames(recom_jtext);

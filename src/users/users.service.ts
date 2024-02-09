@@ -73,9 +73,26 @@ export class UsersService {
       'past_prompts',
     );
   }
-  async createUserRecommendations(userId) {
+  async createUserRecommendations(
+    userId,
+    forbiddenFood,
+    favoriteFood,
+    UserInformation,
+  ) {
+    const User = this.firebaseService.getDocumentbyId('Users', userId);
+    const UserSnapshot = await User.get();
+    const userData = UserSnapshot.data();
+
     const recommendations =
-      await this.artificialIntelligenceService.runRespFoodie();
+      await this.artificialIntelligenceService.runRespFoodie(
+        userData.age,
+        userData.gender,
+        userData.weight,
+        userData.height,
+        forbiddenFood,
+        favoriteFood,
+        UserInformation,
+      );
 
     for (const recommendation of recommendations) {
       console.log(recommendation);

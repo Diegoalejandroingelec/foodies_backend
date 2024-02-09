@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { ArtificialIntelligenceModule } from 'src/AI/ai.module';
 
-
 @Module({
   imports: [FirebaseModule, ArtificialIntelligenceModule],
   controllers: [UsersController],

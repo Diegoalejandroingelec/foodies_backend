@@ -26,7 +26,7 @@ export class FirebaseService {
 
   // Example method to get Firestore
   getDocumentbyId(collection, id) {
-    let db = this.firebaseAdmin.firestore();
+    const db = this.firebaseAdmin.firestore();
     return db.collection(collection).doc(id);
   }
   async appendElementToField(collection, id, data, fieldName) {
