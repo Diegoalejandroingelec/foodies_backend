@@ -1,10 +1,23 @@
-import { Controller, Get, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { FirebaseService } from '../firebase/firebase.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly UsersService: UsersService) {}
+
+  @Post('login')
+  async login(@Body() body) {
+    return this.UsersService.validateUser(body.token);
+  }
+
+  @Post('register')
+  async register(@Body() registerDto) {
+    return await this.UsersService.register(
+      registerDto.email,
+      registerDto.password,
+      registerDto.userInfo,
+    );
+  }
 
   @Get()
   async getUserInformation(@Req() request: any): Promise<any> {
@@ -59,6 +72,6 @@ export class UsersController {
       request.body.food,
       request.body.location,
     );
-    return { msg: "Restaurants found!" , data: result};
+    return { msg: 'Restaurants found!', data: result };
   }
 }

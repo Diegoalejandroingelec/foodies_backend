@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+const nodemailer = require('nodemailer');
+
 dotenv.config();
 
 @Injectable()
@@ -15,7 +17,7 @@ export class FirebaseService {
 
     // Initialize the Firebase Admin SDK
     this.firebaseAdmin = admin.initializeApp({
-      credential: admin.credential.cert(require(serviceAccountPath)),
+      credential: admin.credential.cert(serviceAccountPath),
     });
     // Access Firestore
     this.firestore = admin.firestore();
@@ -48,6 +50,8 @@ export class FirebaseService {
     });
   }
   async createUserRecommendations(userRecommendationData, userId) {
+    console.log('DATA: ');
+    console.log(userRecommendationData);
     const collectionRef = this.firestore.collection('Food_Recommendation');
     const portionInfo = userRecommendationData.portion;
     delete userRecommendationData.portion;
@@ -85,5 +89,67 @@ export class FirebaseService {
     });
 
     await batch.commit();
+  }
+
+  // Initialize Firebase with your configuration
+
+  async token(email): Promise<any> {
+    try {
+      const userRecord = await admin.auth().getUserByEmail(email);
+      // Add logic to verify the password and generate a custom token
+      const token = await admin.auth().createCustomToken(userRecord.uid);
+      return { token };
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException();
+    }
+  }
+  async verifyToken(idToken: string) {
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      const uid = decodedToken.uid;
+      // You can now use the UID to fetch more user details if needed
+      return uid;
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException();
+    }
+  }
+  async register(email: string, password: string, userInfo): Promise<any> {
+    try {
+      const userRecord = await this.firebaseAdmin.auth().createUser({
+        email: email,
+        password: password,
+      });
+
+      userInfo.email = email;
+      const uuid = userRecord.uid;
+
+      const collectionUserRef = this.firestore.collection('Users').doc(uuid);
+
+      await collectionUserRef.set(userInfo);
+      const verificationLink = await this.firebaseAdmin
+        .auth()
+        .generateEmailVerificationLink(email);
+
+      const transporter = nodemailer.createTransport({
+        service: 'hotmail',
+        auth: {
+          user: process.env.EMAIL_ADDRESS,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+      const mailOptions = {
+        from: process.env.EMAIL_ADDRESS,
+        to: email,
+        subject: 'Verify Your Email',
+        html: `<p>Please verify your email by clicking on the link below:</p>
+               <a href="${verificationLink}">Verify Email</a>`,
+      };
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      // Handle error (e.g., email already in use)
+      throw new Error(error.message);
+    }
   }
 }

@@ -1,6 +1,14 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Injectable } from '@nestjs/common';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+import fetch from 'node-fetch';
+import * as fs from 'fs';
+import OpenAI from 'openai';
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const { Storage } = require('@google-cloud/storage');
+
 @Injectable()
 export class ArtificialIntelligenceService {
   constructor() {}
@@ -13,8 +21,7 @@ export class ArtificialIntelligenceService {
 
     // parse the text into a json object
     const obj = JSON.parse(json_text);
-    //console.log(obj)
-    // console.log("DONE..... 🫡");
+
     return obj;
   };
 
@@ -51,7 +58,7 @@ export class ArtificialIntelligenceService {
         {
           role: 'user',
           parts:
-            "You are Nutrition expert who provides the best dietary recommendation according to a user dietary requirements. You will recommend the user with atleast 10 foods. You will always respond with a JSON response [⚠️ strictly : Do not use '`' in response!]. Follow this template: {message:<message> , recommendations: This is the main key that encompasses all the recommended food options. <message> if the user had any query or just a description of why the list of foods were recommended.  food{number}. Replace {number} with a unique identifier for each recommendation. name:<name of food> Replace <name of food> with the actual name of the recommended dish. description:<food description> Replace <food description> with a brief and appealing description of the dish, including its highlights, main ingredients, or taste profile. image: Replace with a prompting text that will help generate the image for each recommendation}. Give at least 10 food recommendations.",
+            "You are Nutrition expert who provides the best dietary recommendation according to a user dietary requirements. You will recommend the user with atleast 20 foods. You will always respond with a JSON response [⚠️ strictly : Do not use '`' in response!]. Follow this template: {message:<message> , recommendations: This is the main key that encompasses all the recommended food options. <message> if the user had any query or just a description of why the list of foods were recommended.  food{number}. Replace {number} with a unique identifier for each recommendation. name:<name of food> Replace <name of food> with the actual name of the recommended dish. description:<food description> Replace <food description> with a brief and appealing description of the dish, including its highlights, main ingredients, or taste profile. image: Replace with a prompting text that will help generate the image for each recommendation}. Give at least 20 food recommendations.",
         },
         {
           role: 'model',
@@ -64,21 +71,16 @@ export class ArtificialIntelligenceService {
       // },
     });
 
-    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat.`;
+    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least five recommendations for my breakfast, at least five recommendations for my lunch, at least five recommendations for my dinner and at least five recommendations of snacks that I can eat between the main meals`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
-    //   console.log("GOT 😸: ", response);
 
     const text = response.text();
 
     const json_obj = this.jsonParser(text);
 
     json_obj.recommendations = this.transformFoodData(json_obj.recommendations);
-
-    // console.log(json_obj);
-
-    console.log('DONE..... 🫡');
 
     return json_obj;
   };
@@ -90,6 +92,7 @@ export class ArtificialIntelligenceService {
 
     // Initialize an empty list to store food names
     const foodNames = [];
+    const imagePrompt = [];
 
     // Loop through each recommendation object
     for (const recommendation of recommendations) {
@@ -99,20 +102,28 @@ export class ArtificialIntelligenceService {
         if (key === 'name') {
           foodNames.push(value);
         }
+        if (key === 'image') {
+          imagePrompt.push(value);
+        }
       }
     }
+    const foodData = foodNames.map((foodName, index) => {
+      return {
+        name: foodName,
+        prompt: imagePrompt[index],
+      };
+    });
 
-    console.log('🥲:', foodNames);
-    console.log('DONE..... 🫡');
+    console.log(foodNames);
+
     // Return the list of food names
-    return foodNames;
+    return foodData;
   };
 
   CookGuiderun = async (Dish_name) => {
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     const foodName = String(Dish_name);
-    console.log('Getting guide ....🍽️');
 
     const chat = model.startChat({
       history: [
@@ -130,22 +141,13 @@ export class ArtificialIntelligenceService {
       //   maxOutputTokens: 100,
       // },
     });
-    console.log('Cooking..... 🧑‍🍳');
 
     const msg = `How do I make ${foodName}?`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
-    //   console.log(response);
 
     const text = response.text();
-
-    console.log('DONE..... 🫡');
-    // console.log(json_obj);
-    //console.log("BEFORE Parsing ", text);
-    //console.log(text);
-
-    console.log(text);
 
     const json_obj = JSON.parse(text);
     console.log(json_obj);
@@ -170,6 +172,67 @@ export class ArtificialIntelligenceService {
     };
   };
 
+  generateFoodImages = async (foodImagesPath, foodData) => {
+    const { name, prompt } = foodData;
+
+    try {
+      const response = await openai.images.generate({
+        model: 'dall-e-2',
+        prompt,
+        n: 1,
+        size: '512x512',
+        quality: 'standard',
+      });
+
+      const imageUrl = response.data[0].url;
+      const generationId = response.created;
+      console.log(`Generated Image URL for "${name}": ${imageUrl}`);
+
+      const filename = `${foodImagesPath}/${name}_${generationId}.jpg`;
+      const timeoutMillis = 10000;
+      const imageResponse = await fetch(imageUrl, {
+        timeout: timeoutMillis,
+      });
+      const buffer = await imageResponse.buffer();
+      fs.writeFileSync(filename, buffer);
+      console.log(`Image saved as: ${filename}`);
+      return filename;
+    } catch (error) {
+      console.error(`Error generating image for "${name}":`, error);
+    }
+  };
+
+  uploadImage = async (storage, bucketName, fullLocalFilePath) => {
+    try {
+      const fileName = fullLocalFilePath.split('/').pop();
+      // Uploads a local file to the bucket
+      await storage.bucket(bucketName).upload(fullLocalFilePath, {
+        destination: fileName,
+        public: true,
+      });
+
+      const [url] = await storage
+        .bucket(bucketName)
+        .file(fileName)
+        .getSignedUrl({
+          action: 'read',
+          expires: '01-01-2100',
+        });
+      return url;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+  storeImageInGCP = async (imagePath) => {
+    // Instantiate a Google Cloud Storage client
+    const storage = new Storage();
+
+    // Define the name of the bucket and the path to the local image
+    const bucketName = 'dish_images';
+
+    return await this.uploadImage(storage, bucketName, imagePath);
+  };
+
   runRespFoodie = async (
     age,
     gender,
@@ -178,6 +241,7 @@ export class ArtificialIntelligenceService {
     forbiddenFood,
     favoriteFood,
     UserInformation,
+    userId,
   ) => {
     // 1. Call the Personalized_Recommendrun() function
 
@@ -191,29 +255,44 @@ export class ArtificialIntelligenceService {
       favoriteFood,
       UserInformation,
     );
-    console.log('Moving forward ....🚗');
+
     // 2. Pass the result to getFoodNames()
-    const foodNames = await this.getFoodNames(recom_jtext);
+    const foodData = await this.getFoodNames(recom_jtext);
 
-    // // Get user input for the desired index
-    // const chosenIndex = prompt("Which food name do you want to eat? Enter the index (starting from 0):");
-
-    // // Validate the input
-    // const indexNumber = parseInt(chosenIndex);
-    // if (isNaN(indexNumber) || indexNumber < 0 || indexNumber >= foodNames.length) {
-    //   throw new Error("Invalid index entered. Please enter a valid number within the range of the food names list.");
-    // }
-
-    // 3. Use the foodNames array as needed
+    const folderName = `Food_folder_${userId}`;
+    fs.mkdir(folderName, (err) => {
+      if (err) {
+        console.error('Error creating folder:', err);
+      } else {
+        console.log('Folder created successfully');
+      }
+    });
     const result = [];
-    for (let i = 0; i < foodNames.length; i++) {
-      const FoodChoice = foodNames[i];
-      console.log('We will cook 🧑‍🍳:', foodNames[i]); // Example: Print the food names
+    for (let i = 0; i < foodData.length; i++) {
+      const FoodChoice = foodData[i].name;
+
       //CookGuiderun(FoodChoice)
       const result_retry = this.retry(this.CookGuiderun);
       const data = await result_retry(FoodChoice);
+      const imageNamePath = await this.generateFoodImages(
+        folderName,
+        foodData[i],
+      );
+      const image_url = await this.storeImageInGCP(imageNamePath);
+      data.image_url =
+        image_url ||
+        'https://storage.googleapis.com/dish_images/generic_dish.png';
       result.push(data);
     }
+
+    // Use fs.rmdir() to delete the folder
+    fs.rmdir(folderName, { recursive: true }, (err) => {
+      if (err) {
+        console.error('Error deleting folder:', err);
+      } else {
+        console.log('Folder deleted successfully');
+      }
+    });
 
     return result;
   };

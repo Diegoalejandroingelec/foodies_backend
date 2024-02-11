@@ -6,7 +6,7 @@ import { ArtificialIntelligenceModule } from 'src/AI/ai.module';
 import { APIModule } from 'src/API/api.module';
 
 @Module({
-  imports: [FirebaseModule, ArtificialIntelligenceModule,APIModule],
+  imports: [FirebaseModule, ArtificialIntelligenceModule, APIModule],
   controllers: [UsersController],
   providers: [UsersService],
 })
