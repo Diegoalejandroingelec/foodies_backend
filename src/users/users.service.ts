@@ -33,18 +33,18 @@ export class UsersService {
       delete userData.food_recommendations[i].food_recommendation_id;
     }
 
-    for (let i = 0; i < userData.favourites.length; i++) {
-      const favourites = userData.favourites[i];
+    // for (let i = 0; i < userData.favourites.length; i++) {
+    //   const favourites = userData.favourites[i];
 
-      const collection = favourites._path.segments[0];
-      const id = favourites._path.segments[1];
+    //   const collection = favourites._path.segments[0];
+    //   const id = favourites._path.segments[1];
 
-      const favourites_info = await this.firebaseService
-        .getDocumentbyId(collection, id)
-        .get();
+    //   const favourites_info = await this.firebaseService
+    //     .getDocumentbyId(collection, id)
+    //     .get();
 
-      userData.favourites[i] = favourites_info.data();
-    }
+    //   userData.favourites[i] = favourites_info.data();
+    // }
     for (const key in userData.dietary_control) {
       const recommendation_id = userData.dietary_control[key];
       let mealFound;
@@ -97,7 +97,12 @@ export class UsersService {
         UserInformation,
         userId,
       );
-
+    await this.firebaseService.updateUserPrompt(
+      userId,
+      forbiddenFood,
+      UserInformation,
+      favoriteFood,
+    );
     for (const recommendation of recommendations) {
       await this.firebaseService.createUserRecommendations(
         recommendation,

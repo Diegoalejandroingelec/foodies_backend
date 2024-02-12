@@ -137,9 +137,6 @@ export class ArtificialIntelligenceService {
           parts: 'What can I help you make/cook today?',
         },
       ],
-      // generationConfig: {
-      //   maxOutputTokens: 100,
-      // },
     });
 
     const msg = `How do I make ${foodName}?`;
