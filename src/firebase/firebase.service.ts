@@ -63,7 +63,7 @@ export class FirebaseService {
     await userRef.update({
       food_recommendations: this.FieldValue.arrayUnion({
         food_recommendation_id: recommendationRef,
-        portion: portionInfo,
+        portion: portionInfo || 'not specified',
         id: newId,
       }),
     });
