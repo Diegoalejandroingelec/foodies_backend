@@ -12,10 +12,18 @@ export class UsersController {
 
   @Post('register')
   async register(@Body() registerDto) {
+    // attributes map from the frontend
+    const age = registerDto.age;
+    const birthdate = registerDto.birthdate;
+    const gender = registerDto.gender;
+    const height = registerDto.height;
+    const name = registerDto.name;
+    const weight = registerDto.weight;
+
     return await this.UsersService.register(
       registerDto.email,
       registerDto.password,
-      registerDto.userInfo,
+      { age, birthdate, gender, height, name, weight },
     );
   }
 
