@@ -69,21 +69,21 @@ export class UsersController {
     );
     return { msg: 'Recommendation created successfully', data: result };
   }
-  @Post('add_to_favorites')
-  async addToFavorites(@Req() request: any): Promise<any> {
-    await this.UsersService.addToFavorites(
+  @Post('add_to_favourites')
+  async addToFavourites(@Req() request: any): Promise<any> {
+    await this.UsersService.addToFavourites(
       request.body.id,
       request.body.recommendationId,
     );
-    return { msg: 'Recommendation added to favorites successfully' };
+    return { msg: 'Recommendation added to favourites successfully' };
   }
-  @Delete('remove_from_favorites')
-  async removeFromFavorites(@Req() request: any): Promise<any> {
-    await this.UsersService.removeFromFavorites(
+  @Delete('remove_from_favourites')
+  async removeFromFavourites(@Req() request: any): Promise<any> {
+    await this.UsersService.removeFromFavourites(
       request.body.id,
       request.body.recommendationId,
     );
-    return { msg: 'Recommendation removed successfully from favorites ' };
+    return { msg: 'Recommendation removed successfully from favourites ' };
   }
 
   @Post('create_dietary_control')

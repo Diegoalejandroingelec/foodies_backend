@@ -77,7 +77,7 @@ export class FirebaseService {
       }),
     });
   }
-  async addRecommendationToFavorites(userId, recommendationId) {
+  async addRecommendationToFavourites(userId, recommendationId) {
     const recommendationRef = this.firestore
       .collection('Food_Recommendation')
       .doc(recommendationId);
@@ -94,7 +94,7 @@ export class FirebaseService {
     });
   }
 
-  async removeRecommendationFromFavorites(userId, recommendationId) {
+  async removeRecommendationFromFavourites(userId, recommendationId) {
     const userRef = this.firestore.collection('Users').doc(userId);
     const recommendationRef = this.firestore
       .collection('Food_Recommendation')
