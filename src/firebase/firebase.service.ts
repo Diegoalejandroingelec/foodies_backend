@@ -141,6 +141,7 @@ export class FirebaseService {
       // set default attributes for new users
       userInfo.food_recommendations = [];
       userInfo.forbidden_ingredients = [];
+      userInfo.taste_preferences = [];
       userInfo.past_prompts = [];
       userInfo.newUser = true;
       userInfo.favourites = [];

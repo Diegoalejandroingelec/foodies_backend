@@ -30,9 +30,10 @@ export class UsersController {
   @Get()
   async getUserInformation(@Req() request: any): Promise<any> {
     const userData = await this.UsersService.getUserInformation(
-      request.body.id,
+      request.query.id,
     );
-    return { msg: 'success', data: userData };
+
+    return { msg: 'Login successful..', data: userData };
   }
   @Put('update_past_prompts')
   async updatePastPrompts(@Req() request: any): Promise<any> {
@@ -40,12 +41,12 @@ export class UsersController {
       request.body.id,
       request.body.data,
     );
-    return { msg: 'successful information update' };
+    return { msg: 'Successful information update..' };
   }
   @Post('post_past_prompts')
   async postPastPrompts(@Req() request: any): Promise<any> {
     await this.UsersService.postPastPrompts(request.body.id, request.body.data);
-    return { msg: 'successful information post' };
+    return { msg: 'Successful information post' };
   }
   @Post('create_recommendations')
   async createRecommendations(@Req() request: any): Promise<any> {
@@ -71,7 +72,7 @@ export class UsersController {
       request.body.id,
       request.body.data,
     );
-    return { msg: 'dietary control created successfully' };
+    return { msg: 'Dietary control created successfully' };
   }
 
   @Get('get_nearby_restaurants')
