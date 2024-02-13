@@ -53,15 +53,13 @@ export class FirebaseService {
     const userRef = this.firestore.collection('Users').doc(userId);
     await userRef.update({
       forbidden_ingredients: forbiddenFood.split(','),
-      favourite_prompt: favoriteFood.split(','),
+      taste_preferences: favoriteFood.split(','),
     });
     await userRef.update({
       past_prompts: this.FieldValue.arrayUnion(UserInformation),
     });
   }
   async createUserRecommendations(userRecommendationData, userId) {
-    console.log('DATA: ');
-    console.log(userRecommendationData);
     const collectionRef = this.firestore.collection('Food_Recommendation');
     const portionInfo = userRecommendationData.portion;
     delete userRecommendationData.portion;

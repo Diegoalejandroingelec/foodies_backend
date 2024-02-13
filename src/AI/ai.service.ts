@@ -4,6 +4,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 import OpenAI from 'openai';
+const axios = require('axios');
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -77,7 +79,7 @@ export class ArtificialIntelligenceService {
       // },
     });
     let avoidDishesText = '';
-    if (avoidDishes) {
+    if (avoidDishes !== '') {
       avoidDishesText = `In addition it is extremelly important that the recommendations do not include these dishes: ${avoidDishes}`;
     }
 
@@ -156,7 +158,7 @@ export class ArtificialIntelligenceService {
 
     const text = response.text();
 
-    const json_obj = JSON.parse(text);
+    const json_obj = this.jsonParser(text);
     console.log(json_obj);
     return json_obj;
   };
@@ -179,6 +181,26 @@ export class ArtificialIntelligenceService {
     };
   };
 
+  getImage = async (imageUrl, localFilePath) => {
+    try {
+      const response = await axios({
+        method: 'GET',
+        url: imageUrl,
+        responseType: 'stream',
+      });
+
+      const writer = response.data.pipe(fs.createWriteStream(localFilePath));
+
+      return new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+    } catch (error) {
+      console.error('An error occurred while downloading the image:', error);
+      throw error;
+    }
+  };
+
   generateFoodImages = async (foodImagesPath, foodData) => {
     const { name, prompt } = foodData;
 
@@ -196,13 +218,17 @@ export class ArtificialIntelligenceService {
       console.log(`Generated Image URL for "${name}": ${imageUrl}`);
 
       const filename = `${foodImagesPath}/${name}_${generationId}.jpg`;
-      const timeoutMillis = 20000;
-      const imageResponse = await fetch(imageUrl, {
-        timeout: timeoutMillis,
-      });
-      const buffer = await imageResponse.buffer();
-      fs.writeFileSync(filename, buffer);
-      console.log(`Image saved as: ${filename}`);
+
+      // const timeoutMillis = 20000;
+      // const imageResponse = await fetch(imageUrl, {
+      //   timeout: timeoutMillis,
+      // });
+      // const buffer = await imageResponse.buffer();
+      // fs.writeFileSync(filename, buffer);
+
+      await this.getImage(imageUrl, filename);
+
+      //console.log(`Image saved as: ${filename}`);
       return filename;
     } catch (error) {
       console.error(`Error generating image for "${name}":`, error);
