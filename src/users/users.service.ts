@@ -45,16 +45,18 @@ export class UsersService {
     for (const meal in dietaryPlan) {
       for (let i = 0; i < userData.food_recommendations.length; i++) {
         if (
-          userData.food_recommendations[i].inner_id ===
-          dietaryPlan[meal].inner_id
+          userData.food_recommendations[i].id === dietaryPlan[meal].inner_id
         ) {
-          await User.update({
-            used: true,
-          });
+          userData.food_recommendations[i].used = true;
         }
       }
     }
-
+    await this.firebaseService.postNewFieldToDocument(
+      'Users',
+      userId,
+      userData.food_recommendations,
+      'food_recommendations',
+    );
     await this.firebaseService.postNewFieldToDocument(
       'Users',
       userId,
