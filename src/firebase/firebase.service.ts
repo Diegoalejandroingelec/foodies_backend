@@ -94,26 +94,19 @@ export class FirebaseService {
     });
   }
 
-  async removeRecommendationFromFavorites(userId, innerId) {
+  async removeRecommendationFromFavorites(userId, recommendationId) {
     const userRef = this.firestore.collection('Users').doc(userId);
+    const recommendationRef = this.firestore
+      .collection('Food_Recommendation')
+      .doc(recommendationId);
     await userRef.update({
-      favourites: this.FieldValue.arrayRemove(innerId),
+      favourites: this.FieldValue.arrayRemove(recommendationRef),
     });
-    const UserSnapshot = await userRef.get();
-    const userData = UserSnapshot.data();
-
-    for (let i = 0; i < userData.food_recommendations.length; i++) {
-      const recommendation = userData.food_recommendations[i];
-      if (innerId === recommendation.id) {
-        const recommendationRef = userData.food_recommendation_id;
-
-        const recommendationSnapshot = await recommendationRef.get();
-        const recommendationData = recommendationSnapshot.data();
-        await recommendationRef.update({
-          likes: recommendationData.likes - 1,
-        });
-      }
-    }
+    const recommendationSnapshot = await recommendationRef.get();
+    const recommendationData = recommendationSnapshot.data();
+    await recommendationRef.update({
+      likes: recommendationData.likes - 1,
+    });
   }
 
   async createDocuments(collectionName: string, dataArray: any[]) {
