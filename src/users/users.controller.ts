@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Req, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Req,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -89,6 +98,11 @@ export class UsersController {
   async createDietaryControlGemini(@Req() request: any): Promise<any> {
     const result = await this.UsersService.createDietaryPlan(request.body.id);
     return { msg: 'dietary control created successfully', data: result };
+  }
+
+  @Get('trending_foods')
+  async getTrendingFoods() {
+    return await this.UsersService.getTrendingFood();
   }
 
   @Get('get_nearby_restaurants')

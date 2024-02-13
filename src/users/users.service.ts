@@ -202,4 +202,7 @@ export class UsersService {
   async register(email, password, userInfo) {
     await this.firebaseService.register(email, password, userInfo);
   }
+  async getTrendingFood() {
+    return await this.firebaseService.getTopFoodRecommendations();
+  }
 }

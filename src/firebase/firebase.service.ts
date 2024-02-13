@@ -195,4 +195,23 @@ export class FirebaseService {
       throw new Error(error.message);
     }
   }
+  async getTopFoodRecommendations(): Promise<any[]> {
+    try {
+      const foodRecommendationCollection = this.firestore.collection(
+        'Food_Recommendation',
+      );
+      const querySnapshot = await foodRecommendationCollection
+        .orderBy('likes', 'desc') // Order by 'likes' in descending order
+        .limit(10) // Limit to top 10 documents
+        .get();
+
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error('Error fetching top food recommendations:', error);
+      throw error;
+    }
+  }
 }
