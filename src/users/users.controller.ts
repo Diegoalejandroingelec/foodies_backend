@@ -13,19 +13,28 @@ export class UsersController {
 
   @Post('register')
   async register(@Body() registerDto) {
+    // attributes map from the frontend
+    const age = registerDto.age;
+    const birthdate = registerDto.birthdate;
+    const gender = registerDto.gender;
+    const height = registerDto.height;
+    const name = registerDto.name;
+    const weight = registerDto.weight;
+
     return await this.UsersService.register(
       registerDto.email,
       registerDto.password,
-      registerDto.userInfo,
+      { age, birthdate, gender, height, name, weight },
     );
   }
 
   @Get()
   async getUserInformation(@Req() request: any): Promise<any> {
     const userData = await this.UsersService.getUserInformation(
-      request.body.id,
+      request.query.id,
     );
-    return { msg: 'success', data: userData };
+
+    return { msg: 'Login successful..', data: userData };
   }
   @Put('update_past_prompts')
   async updatePastPrompts(@Req() request: any): Promise<any> {
@@ -33,12 +42,12 @@ export class UsersController {
       request.body.id,
       request.body.data,
     );
-    return { msg: 'successful information update' };
+    return { msg: 'Successful information update..' };
   }
   @Post('post_past_prompts')
   async postPastPrompts(@Req() request: any): Promise<any> {
     await this.UsersService.postPastPrompts(request.body.id, request.body.data);
-    return { msg: 'successful information post' };
+    return { msg: 'Successful information post' };
   }
   @Post('create_recommendations')
   async createRecommendations(@Req() request: any): Promise<any> {
@@ -74,7 +83,7 @@ export class UsersController {
       request.body.id,
       request.body.data,
     );
-    return { msg: 'dietary control created successfully' };
+    return { msg: 'Dietary control created successfully' };
   }
   @Post('create_dietary_control_gemini')
   async createDietaryControlGemini(@Req() request: any): Promise<any> {
