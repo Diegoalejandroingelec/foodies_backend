@@ -17,7 +17,12 @@ export class ArtificialIntelligenceService {
   jsonParser = (text) => {
     let json_text = text;
 
-    json_text = json_text.replace('\n', '');
+    json_text = json_text.replace('\n', '');    
+    json_text = json_text.replace("```JSON","");
+    json_text = json_text.replace("```json","");
+    json_text = json_text.replace("```","");
+    json_text = json_text.replace("JSON","");
+    json_text = json_text.replace("json","");
 
     // parse the text into a json object
     const obj = JSON.parse(json_text);
@@ -233,6 +238,36 @@ export class ArtificialIntelligenceService {
     const bucketName = 'dish_images';
 
     return await this.uploadImage(storage, bucketName, imagePath);
+  };
+
+  personalizedDietaryPlan = async (reqArray) => {
+    // For text-only input, use the gemini-pro model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+    // console.log("Running..... 🏃‍♂️");
+    const chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: "You are Nutrition expert who provides the best dietary recommendation according to a user dietary requirements. You will plan his dietary plan for the day after taking a list of foods, each food has a unique id and the food_type indicates what type of meal it is. You will always respond with a JSON response [strictly : Do not use '```' in response!]. Follow this template: {breakfast (this is a type): {'id': <you will get this as the ID from the array of food items from which you should return>, time: <when to eat it, the time of the day t> in hours:minutes in 12hrs format (ex: 1:30 pm, 5:30 am), (~similarly do the same for other foodtype from the list),snack1: {id, time},lunch :{id, time}, snack2:{id, time},dinner : {id, time}}. Please generate the timing for when I eat the food correctly, so that I follow a healthy diet."
+            
+        },
+        {
+          role: "model",
+          parts: `Hi, please give me the list of foods you like, so that I can plan your meals for the day.`,
+        },
+      ],
+    });
+  
+    const msg = `Hi, this my list of food ${JSON.stringify(reqArray)}, please plan my meals for the day.`;
+    const result = await chat.sendMessage(msg);
+    const response = result.response;
+ 
+  
+    const text = response.text();
+    let json_obj = this.jsonParser(text)
+
+    return json_obj
+
   };
 
   runRespFoodie = async (
