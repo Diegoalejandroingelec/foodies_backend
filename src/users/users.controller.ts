@@ -34,7 +34,7 @@ export class UsersController {
       request.query.id,
     );
 
-    return { msg: 'Login successful..', data: userData };
+    return { msg: 'Login successful', data: userData };
   }
   @Put('update_past_prompts')
   async updatePastPrompts(@Req() request: any): Promise<any> {

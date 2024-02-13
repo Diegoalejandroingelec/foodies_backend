@@ -26,15 +26,41 @@ export class UsersService {
         .getDocumentbyId(collection, id)
         .get();
       const data = recommendation_info.data();
-      recommendationsMainData.push({
-        name: data.name,
-        description: data.description,
-        food_type: data.food_type,
-        inner_id: recommendation.id,
-        id: id,
-      });
+      if (!recommendation.used) {
+        recommendationsMainData.push({
+          name: data.name,
+          description: data.description,
+          food_type: data.food_type,
+          inner_id: recommendation.id,
+          id: id,
+        });
+      }
     }
-    return recommendationsMainData;
+
+    const dietaryPlan =
+      await this.artificialIntelligenceService.personalizedDietaryPlan(
+        recommendationsMainData,
+      );
+
+    for (const meal in dietaryPlan) {
+      for (let i = 0; i < userData.food_recommendations.length; i++) {
+        if (
+          userData.food_recommendations[i].inner_id ===
+          dietaryPlan[meal].inner_id
+        ) {
+          await User.update({
+            used: true,
+          });
+        }
+      }
+    }
+
+    await this.firebaseService.postNewFieldToDocument(
+      'Users',
+      userId,
+      dietaryPlan,
+      'dietary_control',
+    );
   }
   async getUserInformation(userId): Promise<any> {
     const User = this.firebaseService.getDocumentbyId('Users', userId);
