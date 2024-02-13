@@ -49,6 +49,7 @@ export class ArtificialIntelligenceService {
     forbiddenFood,
     favoriteFood,
     UserInformation,
+    avoidDishes,
   ) => {
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
@@ -70,8 +71,12 @@ export class ArtificialIntelligenceService {
       //   maxOutputTokens: 100,
       // },
     });
+    let avoidDishesText = '';
+    if (avoidDishes) {
+      avoidDishesText = `In addition it is extremelly important that the recommendations do not include these dishes: ${avoidDishes}`;
+    }
 
-    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least five recommendations for my breakfast, at least five recommendations for my lunch, at least five recommendations for my dinner and at least five recommendations of snacks that I can eat between the main meals`;
+    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least five recommendations for my breakfast, at least five recommendations for my lunch, at least five recommendations for my dinner and at least five recommendations of snacks that I can eat between the main meals. ${avoidDishesText}`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
@@ -130,7 +135,7 @@ export class ArtificialIntelligenceService {
         {
           role: 'user',
           parts:
-            "You are a Nutrition expert, and recommends food to the user and how to make it. You always respond with a JSON response[⚠️ strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {food_type: this field can only take four values (dinner, lunch, breakfast or snack) this field must specify in which meal this food should be eaten. image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile. procedure: array composed of the cooking steps. ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients.",
+            "You are a Nutrition expert with culinary knowledge from all over the world, you recommends food to the user and how to make it. You always respond with a JSON response[⚠️ strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {food_category: this field must specify the category of the dish (e.g., Indian, Indonesian, Vietnamese, Colombian, Peruvian, etc) this field is not restricted to the previous categories but it has to be as specific as possible, food_type: this field can only take four values (dinner, lunch, breakfast or snack) this field must specify in which meal this food should be eaten. image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile. procedure: array composed of the cooking steps. ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients.",
         },
         {
           role: 'model',
@@ -151,7 +156,7 @@ export class ArtificialIntelligenceService {
     return json_obj;
   };
 
-  retry = (fn, maxRetries = 5, delay = 1000) => {
+  retry = (fn, maxRetries = 10, delay = 1000) => {
     return async function (...args) {
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -186,7 +191,7 @@ export class ArtificialIntelligenceService {
       console.log(`Generated Image URL for "${name}": ${imageUrl}`);
 
       const filename = `${foodImagesPath}/${name}_${generationId}.jpg`;
-      const timeoutMillis = 10000;
+      const timeoutMillis = 20000;
       const imageResponse = await fetch(imageUrl, {
         timeout: timeoutMillis,
       });
@@ -239,6 +244,7 @@ export class ArtificialIntelligenceService {
     favoriteFood,
     UserInformation,
     userId,
+    avoidDishes,
   ) => {
     // 1. Call the Personalized_Recommendrun() function
 
@@ -251,6 +257,7 @@ export class ArtificialIntelligenceService {
       forbiddenFood,
       favoriteFood,
       UserInformation,
+      avoidDishes,
     );
 
     // 2. Pass the result to getFoodNames()

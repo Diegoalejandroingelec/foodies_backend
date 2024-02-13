@@ -65,6 +65,7 @@ export class FirebaseService {
     const collectionRef = this.firestore.collection('Food_Recommendation');
     const portionInfo = userRecommendationData.portion;
     delete userRecommendationData.portion;
+    userRecommendationData.likes = 0;
     const recommendationRef = await collectionRef.add(userRecommendationData);
 
     const userRef = this.firestore.collection('Users').doc(userId);
@@ -82,12 +83,39 @@ export class FirebaseService {
     const recommendationRef = this.firestore
       .collection('Food_Recommendation')
       .doc(recommendationId);
-
+    const recommendationSnapshot = await recommendationRef.get();
+    const recommendationData = recommendationSnapshot.data();
     const userRef = this.firestore.collection('Users').doc(userId);
+
+    await recommendationRef.update({
+      likes: recommendationData.likes + 1,
+    });
 
     await userRef.update({
       favourites: this.FieldValue.arrayUnion(recommendationRef),
     });
+  }
+
+  async removeRecommendationFromFavorites(userId, innerId) {
+    const userRef = this.firestore.collection('Users').doc(userId);
+    await userRef.update({
+      favourites: this.FieldValue.arrayRemove(innerId),
+    });
+    const UserSnapshot = await userRef.get();
+    const userData = UserSnapshot.data();
+
+    for (let i = 0; i < userData.food_recommendations.length; i++) {
+      const recommendation = userData.food_recommendations[i];
+      if (innerId === recommendation.id) {
+        const recommendationRef = userData.food_recommendation_id;
+
+        const recommendationSnapshot = await recommendationRef.get();
+        const recommendationData = recommendationSnapshot.data();
+        await recommendationRef.update({
+          likes: recommendationData.likes - 1,
+        });
+      }
+    }
   }
 
   async createDocuments(collectionName: string, dataArray: any[]) {
@@ -100,9 +128,6 @@ export class FirebaseService {
 
     await batch.commit();
   }
-
-  // Initialize Firebase with your configuration
-
   async token(email): Promise<any> {
     try {
       const userRecord = await admin.auth().getUserByEmail(email);
@@ -119,6 +144,7 @@ export class FirebaseService {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       const uid = decodedToken.uid;
       // You can now use the UID to fetch more user details if needed
+
       return uid;
     } catch (error) {
       console.log(error);

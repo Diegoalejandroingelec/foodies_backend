@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -7,7 +7,8 @@ export class UsersController {
 
   @Post('login')
   async login(@Body() body) {
-    return this.UsersService.validateUser(body.token);
+    const userId = await this.UsersService.validateUser(body.token);
+    return { msg: 'login successful', data: { userId } };
   }
 
   @Post('register')
@@ -46,6 +47,7 @@ export class UsersController {
       request.body.forbiddenFood,
       request.body.favoriteFood,
       request.body.UserInformation,
+      request.body.avoidDishes,
     );
     return { msg: 'Recommendation created successfully', data: result };
   }
@@ -57,6 +59,15 @@ export class UsersController {
     );
     return { msg: 'Recommendation added to favorites successfully' };
   }
+  @Delete('remove_from_favorites')
+  async removeFromFavorites(@Req() request: any): Promise<any> {
+    await this.UsersService.removeFromFavorites(
+      request.body.id,
+      request.body.recommendationId,
+    );
+    return { msg: 'Recommendation removed successfully from favorites ' };
+  }
+
   @Post('create_dietary_control')
   async createDietaryControl(@Req() request: any): Promise<any> {
     await this.UsersService.createDietaryControl(
@@ -64,6 +75,11 @@ export class UsersController {
       request.body.data,
     );
     return { msg: 'dietary control created successfully' };
+  }
+  @Post('create_dietary_control_gemini')
+  async createDietaryControlGemini(@Req() request: any): Promise<any> {
+    const result = await this.UsersService.createDietaryPlan(request.body.id);
+    return { msg: 'dietary control created successfully', data: result };
   }
 
   @Get('get_nearby_restaurants')

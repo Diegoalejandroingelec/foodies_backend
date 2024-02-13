@@ -11,6 +11,31 @@ export class UsersService {
     private readonly artificialIntelligenceService: ArtificialIntelligenceService,
     private readonly apiService: APIService,
   ) {}
+  async createDietaryPlan(userId) {
+    const User = this.firebaseService.getDocumentbyId('Users', userId);
+    const UserSnapshot = await User.get();
+    const userData = UserSnapshot.data();
+    const recommendationsMainData = [];
+    for (let i = 0; i < userData.food_recommendations.length; i++) {
+      const recommendation = userData.food_recommendations[i];
+      const collection =
+        recommendation.food_recommendation_id._path.segments[0];
+      const id = recommendation.food_recommendation_id._path.segments[1];
+
+      const recommendation_info = await this.firebaseService
+        .getDocumentbyId(collection, id)
+        .get();
+      const data = recommendation_info.data();
+      recommendationsMainData.push({
+        name: data.name,
+        description: data.description,
+        food_type: data.food_type,
+        inner_id: recommendation.id,
+        id: id,
+      });
+    }
+    return recommendationsMainData;
+  }
   async getUserInformation(userId): Promise<any> {
     const User = this.firebaseService.getDocumentbyId('Users', userId);
     const UserSnapshot = await User.get();
@@ -81,6 +106,7 @@ export class UsersService {
     forbiddenFood,
     favoriteFood,
     UserInformation,
+    avoidDishes,
   ) {
     const User = this.firebaseService.getDocumentbyId('Users', userId);
     const UserSnapshot = await User.get();
@@ -96,6 +122,7 @@ export class UsersService {
         favoriteFood,
         UserInformation,
         userId,
+        avoidDishes,
       );
     await this.firebaseService.updateUserPrompt(
       userId,
@@ -112,6 +139,12 @@ export class UsersService {
   }
   async addToFavorites(userId, recommendationId) {
     await this.firebaseService.addRecommendationToFavorites(
+      userId,
+      recommendationId,
+    );
+  }
+  async removeFromFavorites(userId, recommendationId) {
+    await this.firebaseService.removeRecommendationFromFavorites(
       userId,
       recommendationId,
     );
@@ -136,7 +169,7 @@ export class UsersService {
     return this.firebaseService.token(email);
   }
   async validateUser(idToken) {
-    await this.firebaseService.verifyToken(idToken);
+    return await this.firebaseService.verifyToken(idToken);
   }
   async register(email, password, userInfo) {
     await this.firebaseService.register(email, password, userInfo);
