@@ -167,14 +167,14 @@ export class UsersService {
       );
     }
   }
-  async addToFavorites(userId, recommendationId) {
-    await this.firebaseService.addRecommendationToFavorites(
+  async addToFavourites(userId, recommendationId) {
+    await this.firebaseService.addRecommendationToFavourites(
       userId,
       recommendationId,
     );
   }
-  async removeFromFavorites(userId, recommendationId) {
-    await this.firebaseService.removeRecommendationFromFavorites(
+  async removeFromFavourites(userId, recommendationId) {
+    await this.firebaseService.removeRecommendationFromFavourites(
       userId,
       recommendationId,
     );
@@ -203,5 +203,8 @@ export class UsersService {
   }
   async register(email, password, userInfo) {
     await this.firebaseService.register(email, password, userInfo);
+  }
+  async getTrendingFood() {
+    return await this.firebaseService.getTopFoodRecommendations();
   }
 }

@@ -77,7 +77,7 @@ export class FirebaseService {
       }),
     });
   }
-  async addRecommendationToFavorites(userId, recommendationId) {
+  async addRecommendationToFavourites(userId, recommendationId) {
     const recommendationRef = this.firestore
       .collection('Food_Recommendation')
       .doc(recommendationId);
@@ -94,26 +94,19 @@ export class FirebaseService {
     });
   }
 
-  async removeRecommendationFromFavorites(userId, innerId) {
+  async removeRecommendationFromFavourites(userId, recommendationId) {
     const userRef = this.firestore.collection('Users').doc(userId);
+    const recommendationRef = this.firestore
+      .collection('Food_Recommendation')
+      .doc(recommendationId);
     await userRef.update({
-      favourites: this.FieldValue.arrayRemove(innerId),
+      favourites: this.FieldValue.arrayRemove(recommendationRef),
     });
-    const UserSnapshot = await userRef.get();
-    const userData = UserSnapshot.data();
-
-    for (let i = 0; i < userData.food_recommendations.length; i++) {
-      const recommendation = userData.food_recommendations[i];
-      if (innerId === recommendation.id) {
-        const recommendationRef = userData.food_recommendation_id;
-
-        const recommendationSnapshot = await recommendationRef.get();
-        const recommendationData = recommendationSnapshot.data();
-        await recommendationRef.update({
-          likes: recommendationData.likes - 1,
-        });
-      }
-    }
+    const recommendationSnapshot = await recommendationRef.get();
+    const recommendationData = recommendationSnapshot.data();
+    await recommendationRef.update({
+      likes: recommendationData.likes - 1,
+    });
   }
 
   async createDocuments(collectionName: string, dataArray: any[]) {
@@ -193,6 +186,25 @@ export class FirebaseService {
     } catch (error) {
       // Handle error (e.g., email already in use)
       throw new Error(error.message);
+    }
+  }
+  async getTopFoodRecommendations(): Promise<any[]> {
+    try {
+      const foodRecommendationCollection = this.firestore.collection(
+        'Food_Recommendation',
+      );
+      const querySnapshot = await foodRecommendationCollection
+        .orderBy('likes', 'desc') // Order by 'likes' in descending order
+        .limit(10) // Limit to top 10 documents
+        .get();
+
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error('Error fetching top food recommendations:', error);
+      throw error;
     }
   }
 }

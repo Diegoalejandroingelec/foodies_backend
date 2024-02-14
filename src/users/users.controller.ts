@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Req, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Req,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -60,13 +69,13 @@ export class UsersController {
     );
     return { msg: 'Recommendation created successfully', data: result };
   }
-  @Post('add_to_favorites')
-  async addToFavorites(@Req() request: any): Promise<any> {
-    await this.UsersService.addToFavorites(
+  @Post('add_to_favourites')
+  async addToFavourites(@Req() request: any): Promise<any> {
+    await this.UsersService.addToFavourites(
       request.body.id,
       request.body.recommendationId,
     );
-    return { msg: 'Recommendation added to favorites successfully' };
+    return { msg: 'Recommendation added to favourites successfully' };
   }
   @Delete('remove_from_favorites')
   async removeFromFavorites(@Req() request: any): Promise<any> {
@@ -74,7 +83,7 @@ export class UsersController {
       request.query.id,
       request.query.recommendationId,
     );
-    return { msg: 'Recommendation removed successfully from favorites ' };
+    return { msg: 'Recommendation removed successfully from favourites ' };
   }
 
   @Post('create_dietary_control')
@@ -89,6 +98,11 @@ export class UsersController {
   async createDietaryControlGemini(@Req() request: any): Promise<any> {
     const result = await this.UsersService.createDietaryPlan(request.body.id);
     return { msg: 'dietary control created successfully', data: result };
+  }
+
+  @Get('trending_foods')
+  async getTrendingFoods() {
+    return await this.UsersService.getTrendingFood();
   }
 
   @Get('get_nearby_restaurants')
