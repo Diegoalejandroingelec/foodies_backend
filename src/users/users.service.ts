@@ -82,6 +82,7 @@ export class UsersService {
 
       userData.food_recommendations[i].food_recommendation =
         recommendation_info.data();
+      userData.food_recommendations[i].food_recommendation.food_id = id;
 
       delete userData.food_recommendations[i].food_recommendation_id;
     }
@@ -97,6 +98,7 @@ export class UsersService {
         .get();
 
       userData.favourites[i] = favourites_info.data();
+      userData.favourites[i].food_id = id;
     }
     for (const key in userData.dietary_control) {
       const recommendation_id = userData.dietary_control[key];

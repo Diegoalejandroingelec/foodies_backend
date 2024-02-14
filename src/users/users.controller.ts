@@ -71,8 +71,8 @@ export class UsersController {
   @Delete('remove_from_favorites')
   async removeFromFavorites(@Req() request: any): Promise<any> {
     await this.UsersService.removeFromFavorites(
-      request.body.id,
-      request.body.recommendationId,
+      request.query.id,
+      request.query.recommendationId,
     );
     return { msg: 'Recommendation removed successfully from favorites ' };
   }
@@ -93,9 +93,11 @@ export class UsersController {
 
   @Get('get_nearby_restaurants')
   async restaurantsNearMe(@Req() request: any): Promise<any> {
+    request.query.latitude = parseFloat(request.query.latitude);
+    request.query.longitude = parseFloat(request.query.longitude);
     const result = await this.UsersService.getNearbyRestaurants(
-      request.body.food,
-      request.body.location,
+      request.query.food_name,
+      { latitude: request.query.latitude, longitude: request.query.longitude },
     );
     return { msg: 'Restaurants found!', data: result };
   }
