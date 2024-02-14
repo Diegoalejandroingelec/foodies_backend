@@ -79,7 +79,7 @@ export class UsersController {
   }
   @Delete('remove_from_favorites')
   async removeFromFavorites(@Req() request: any): Promise<any> {
-    await this.UsersService.removeFromFavorites(
+    await this.UsersService.removeFromFavourites(
       request.query.id,
       request.query.recommendationId,
     );
