@@ -77,8 +77,8 @@ export class UsersController {
     );
     return { msg: 'Recommendation added to favourites successfully' };
   }
-  @Delete('remove_from_favorites')
-  async removeFromFavorites(@Req() request: any): Promise<any> {
+  @Delete('remove_from_favourites')
+  async removeFromFavourites(@Req() request: any): Promise<any> {
     await this.UsersService.removeFromFavourites(
       request.query.id,
       request.query.recommendationId,
