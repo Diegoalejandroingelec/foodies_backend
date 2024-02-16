@@ -54,6 +54,7 @@ export class FirebaseService {
     await userRef.update({
       forbidden_ingredients: forbiddenFood.split(','),
       taste_preferences: favoriteFood.split(','),
+      newUser: false,
     });
     await userRef.update({
       past_prompts: this.FieldValue.arrayUnion(UserInformation),

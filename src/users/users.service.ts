@@ -101,14 +101,24 @@ export class UsersService {
       userData.favourites[i].food_id = id;
     }
     for (const key in userData.dietary_control) {
-      const recommendation_id = userData.dietary_control[key];
-      let mealFound;
-      userData.food_recommendations.forEach((element) => {
-        if (element.id === recommendation_id) {
-          mealFound = element;
-        }
-      });
-      userData.dietary_control[key] = mealFound;
+      const dietary = userData.dietary_control[key];
+
+      if (dietary.inner_id) {
+        let mealFound;
+        userData.food_recommendations.forEach((element) => {
+          console.log(element);
+          if (element.food_recommendation.food_id === dietary.id) {
+            mealFound = element;
+          }
+        });
+        userData.dietary_control[key].image_url =
+          mealFound.food_recommendation.image_url;
+        userData.dietary_control[key].name = mealFound.food_recommendation.name;
+        userData.dietary_control[key].description =
+          mealFound.food_recommendation.description;
+      } else {
+        delete userData.dietary_control[key];
+      }
     }
 
     return userData;
@@ -166,6 +176,7 @@ export class UsersService {
         userId,
       );
     }
+    console.log('DONE');
   }
   async addToFavourites(userId, recommendationId) {
     await this.firebaseService.addRecommendationToFavourites(
