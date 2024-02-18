@@ -106,7 +106,7 @@ export class UsersService {
       if (dietary.inner_id) {
         let mealFound;
         userData.food_recommendations.forEach((element) => {
-          console.log(element);
+          //console.log(element);
           if (element.food_recommendation.food_id === dietary.id) {
             mealFound = element;
           }
@@ -176,7 +176,7 @@ export class UsersService {
         userId,
       );
     }
-    console.log('DONE');
+    //console.log('DONE');
   }
   async addToFavourites(userId, recommendationId) {
     await this.firebaseService.addRecommendationToFavourites(
@@ -200,6 +200,8 @@ export class UsersService {
   }
 
   async getNearbyRestaurants(foodName, location) {
+    console.log(location);
+    console.log(foodName);
     const result = await this.apiService.searchNearbyRestaurants(
       foodName,
       location,

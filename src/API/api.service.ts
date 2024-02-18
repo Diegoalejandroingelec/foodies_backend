@@ -7,58 +7,32 @@ export class APIService {
   constructor() {}
 
   async searchNearbyRestaurants(foodName, location) {
-    // Validate input data (optional)
-    const searchQuery = `${foodName} near me`;
-
-    const data = {
-      textQuery: searchQuery,
-      openNow: true,
-      maxResultCount: 7,
-      rankPreference: 'DISTANCE',
-      locationBias: {
-        circle: {
-          center: {
-            latitude: location.latitude,
-            longitude: location.longitude,
-          },
-          radius: 700,
-        },
-      },
-    };
-
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://places.googleapis.com/v1/places:searchText',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY,
-        'X-Goog-FieldMask':
-          'places.displayName,places.formattedAddress,places.rating,places.googleMapsUri', // rating and url
-      },
-      data,
-    };
-
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     try {
-      const response = await axios.request(config);
-      if (response) {
-        const data = response.data.places.map((data) => {
-          return {
-            address: data.formattedAddress,
-            rating: data.rating,
-            gmaps_url: data.googleMapsUri,
-            name: data.displayName.text,
-          };
-        });
-        return data;
+      const response = await axios.get(url, {
+        params: {
+          location: `${location.latitude},${location.longitude}`,
+          radius: 10000,
+          type: 'restaurant',
+          keyword: foodName,
+          key: apiKey,
+        },
+      });
 
-        // console.log("\n Name: ", response.data.places[0]['displayName'])
-      } else {
-        console.log('No results found for your search.');
-      }
+      const places = response.data.results.map((place) => {
+        return {
+          name: place.name,
+          address: place.vicinity,
+          rating: place.rating,
+          gmaps_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
+        };
+      });
+
+      return places;
     } catch (error) {
-      console.error('Error searching places:', error);
-      // Handle the error more specifically
+      console.error('Error occurred:', error);
+      throw error;
     }
   }
 }

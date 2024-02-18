@@ -60,13 +60,13 @@ export class ArtificialIntelligenceService {
   ) => {
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-    console.log('Running..... 🏃‍♂️');
+    //console.log('Running..... 🏃‍♂️');
     const chat = model.startChat({
       history: [
         {
           role: 'user',
           parts:
-            "You are Nutrition expert who provides the best dietary recommendation according to a user dietary requirements. You will recommend the user with atleast 20 foods. You will always respond with a JSON response [⚠️ strictly : Do not use '`' in response!]. Follow this template: {message:<message> , recommendations: This is the main key that encompasses all the recommended food options. <message> if the user had any query or just a description of why the list of foods were recommended.  food{number}. Replace {number} with a unique identifier for each recommendation. name:<name of food> Replace <name of food> with the actual name of the recommended dish. description:<food description> Replace <food description> with a brief and appealing description of the dish, including its highlights, main ingredients, or taste profile. image: Replace with a prompting text that will help generate the image for each recommendation}. Give at least 20 food recommendations.",
+            "You are Nutrition expert who provides the best dietary recommendation according to a user dietary requirements. You will recommend the user with atleast 10 foods. You will always respond with a JSON response [⚠️ strictly : Do not use '`' in response!]. Follow this template: {message:<message> , recommendations: This is the main key that encompasses all the recommended food options. <message> if the user had any query or just a description of why the list of foods were recommended.  food{number}. Replace {number} with a unique identifier for each recommendation. name:<name of food> Replace <name of food> with the actual name of the recommended dish. description:<food description> Replace <food description> with a brief and appealing description of the dish, including its highlights, main ingredients, or taste profile. image: Replace with a prompting text that will help generate the image for each recommendation}. Give at least 10 food recommendations.",
         },
         {
           role: 'model',
@@ -83,7 +83,7 @@ export class ArtificialIntelligenceService {
       avoidDishesText = `In addition it is extremelly important that the recommendations do not include these dishes: ${avoidDishes}`;
     }
 
-    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least five recommendations for my breakfast, at least five recommendations for my lunch, at least five recommendations for my dinner and at least five recommendations of snacks that I can eat between the main meals. ${avoidDishesText}`;
+    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least one recommendations for my breakfast, at least one recommendations for my lunch, at least one recommendations for my dinner and at least one recommendations of snacks that I can eat between the main meals. ${avoidDishesText}`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
@@ -142,7 +142,7 @@ export class ArtificialIntelligenceService {
         {
           role: 'user',
           parts:
-            "You are a Nutrition expert with culinary knowledge from all over the world, you recommends food to the user and how to make it. You always respond with a JSON response[⚠️ strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {food_category: this field must specify the category of the dish (e.g., Indian, Indonesian, Vietnamese, Colombian, Peruvian, etc) this field is not restricted to the previous categories but it has to be as specific as possible, food_type: this field can only take four values (dinner, lunch, breakfast or snack) this field must specify in which meal this food should be eaten. image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile. procedure: array composed of the cooking steps. ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients.",
+            "You are a Nutrition expert with culinary knowledge from all over the world, you recommends food to the user and how to make it. You always respond with a JSON response [strictly : Do not use '`' in response! and all fields in the json should be of lower case]. Follow this template: {food_category: this field must specify the category of the dish (e.g., Indian, Indonesian, Vietnamese, Colombian, Peruvian, etc) this field is not restricted to the previous categories but it has to be as specific as possible, food_type: this field can only take four values (dinner, lunch, breakfast or snack) this field must specify in which meal this food should be eaten. image_url:Image URL: Replace <an image url of the food being recommended> with the actual image URL. name: Replace <name of the food> with the actual name of the dish. description: Provide a brief description of the dish, including its origin, main ingredients, and taste profile. procedure: array composed of the cooking steps this array must be an array of strings (e.g., [1. Build a fire in a grill or asado pit 2. Season the meat with salt and pepper 3.Place the meat on the grill and cook over hot coals, etc ]). ingredients:For each ingredient, specify the following:  name: <The name of the ingredient>. quantity: <The amount of the ingredient needed> it is a string datatype. (e.g., grams, units, pieces, cup, teaspoon, etc.)}. portion:<consider dietary needs + nutrition requirements and specify an amount> this field should reflect the dose or amount of food a person should consume based on their dietary requirements tell the amount of food the person should eat based on the quantity of food judging from the ingredients. [Important: limit this field to 4 words]}",
         },
         {
           role: 'model',
@@ -159,7 +159,7 @@ export class ArtificialIntelligenceService {
     const text = response.text();
 
     const json_obj = this.jsonParser(text);
-    console.log(json_obj);
+    //console.log(json_obj);
     return json_obj;
   };
 
@@ -215,7 +215,7 @@ export class ArtificialIntelligenceService {
 
       const imageUrl = response.data[0].url;
       const generationId = response.created;
-      console.log(`Generated Image URL for "${name}": ${imageUrl}`);
+      //console.log(`Generated Image URL for "${name}": ${imageUrl}`);
 
       const filename = `${foodImagesPath}/${name}_${generationId}.jpg`;
 
@@ -291,7 +291,8 @@ export class ArtificialIntelligenceService {
     const response = result.response;
 
     const text = response.text();
-    const json_obj = this.jsonParser(text);
+    const json_obj_retry = this.retry(this.jsonParser);
+    const json_obj = json_obj_retry(text);
 
     return json_obj;
   };

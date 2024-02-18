@@ -69,7 +69,7 @@ export class FirebaseService {
 
     const userRef = this.firestore.collection('Users').doc(userId);
     const newId = uuidv4();
-    console.log(portionInfo);
+    //console.log(portionInfo);
     await userRef.update({
       food_recommendations: this.FieldValue.arrayUnion({
         food_recommendation_id: recommendationRef,
@@ -127,7 +127,7 @@ export class FirebaseService {
       const token = await admin.auth().createCustomToken(userRecord.uid);
       return { token };
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       throw new UnauthorizedException();
     }
   }
@@ -139,7 +139,7 @@ export class FirebaseService {
 
       return uid;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       throw new UnauthorizedException();
     }
   }
