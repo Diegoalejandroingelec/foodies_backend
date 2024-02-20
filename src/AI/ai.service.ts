@@ -215,7 +215,7 @@ export class ArtificialIntelligenceService {
     try {
       const response = await openai.images.generate({
         model: 'dall-e-2',
-        prompt: `${prompt} and generate an aesthetic image for this dish.`,
+        prompt: `Generate a beautiful and appealing image for this dish: ${prompt}`,
         n: 1,
         size: '512x512',
         quality: 'standard',
@@ -348,10 +348,10 @@ export class ArtificialIntelligenceService {
       //CookGuiderun(FoodChoice)
       const result_retry = this.retry(this.CookGuiderun);
       const data = await result_retry(FoodChoice);
-      const imageNamePath = await this.generateFoodImages(
-        folderName,
-        foodData[i],
-      );
+      const imageNamePath = await this.generateFoodImages(folderName, {
+        prompt: `${foodData[i].name}: ${data.description}`,
+        name: foodData[i].name,
+      });
       const image_url = await this.storeImageInGCP(imageNamePath);
       data.image_url =
         image_url ||

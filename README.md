@@ -24,7 +24,19 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Our solution, RespFoodies, is ingeniously architected using Google Cloud Platform services. The frontend, is being crafted for Android devices using Kotlin (https://github.com/fendylo/respfoodie) and a robust backend developed with NestJS.
+
+The core of our server-side operations is the integration with multiple Google APIs, mainly Gemini. This powerful tool enables us to generate not just creative, but highly personalized food recommendations. Tailored to individual user characteristics like age, health goals, and dietary restrictions, Gemini goes beyond suggesting dishes, it provides detailed insights into the ingredients, preparation methods, and optimal consumption times.
+
+Complementing our AI prowess, we leverage GCP buckets for the secure storage of key data, including dish images and user profile pictures. Our database, hosted on Firebase, efficiently manages the AI-generated recommendations and user details. This versatile service also streamlines user authentication and account management.
+
+A notable addition to our system is the integration with the Google Maps API. This feature allows users to effortlessly locate restaurants serving specific food categories, enhancing the dining experience with geographical convenience.
+
+Looking ahead, we plan to further elevate our backend services by adopting Google's Kubernetes. This strategic move will automate and optimize the deployment, scaling, and operational management of our application containers, ensuring an even more seamless and reliable experience for RespFoodies users.
+
+## RespFoodies Architecture
+
+![RespFoodies Architecture](https://drive.google.com/file/d/1RmRXWAUxMpMFjTjRvczJt8gZ1L9RcMnd/view?usp=sharing)
 
 ## Installation
 
