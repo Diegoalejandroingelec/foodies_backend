@@ -36,7 +36,9 @@ Looking ahead, we plan to further elevate our backend services by adopting Googl
 
 ## RespFoodies Architecture
 
-![RespFoodies Architecture](https://drive.google.com/file/d/1RmRXWAUxMpMFjTjRvczJt8gZ1L9RcMnd/view?usp=sharing)
+<div align="center">
+   <img src="https://drive.google.com/file/d/1RmRXWAUxMpMFjTjRvczJt8gZ1L9RcMnd/view?usp=sharing" width="250">
+</div>
 
 ## Installation
 
@@ -85,3 +87,12 @@ GOOGLE_APPLICATION_CREDENTIALS=<your_gcp_credentials_path>
 
 Replace the placeholders (<...>) with your actual values. Ensure this file is kept secure and not shared publicly, as it contains sensitive information.
 ```
+
+## Authors and Acknowledgments
+
+Resp Foodies is a collaborative project by the University of Technology Sydney GDSC team:
+
+1. [Fendy Lomanjaya](https://www.linkedin.com/in/fendy-lomanjaya)
+2. [Diego Alejandro Ramirez Vargas](https://www.linkedin.com/in/diegoalerami-vargas/)
+3. [Sudarshan Kongkham](https://www.linkedin.com/in/shudarshan-kongkham-b86787196/)
+4. [Abdullah Bahri](https://www.linkedin.com/in/abdullah-bahr/)
