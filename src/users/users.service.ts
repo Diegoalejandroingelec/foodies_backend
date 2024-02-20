@@ -111,11 +111,14 @@ export class UsersService {
             mealFound = element;
           }
         });
-        userData.dietary_control[key].image_url =
-          mealFound.food_recommendation.image_url;
-        userData.dietary_control[key].name = mealFound.food_recommendation.name;
-        userData.dietary_control[key].description =
-          mealFound.food_recommendation.description;
+        if (mealFound) {
+          userData.dietary_control[key].image_url =
+            mealFound.food_recommendation.image_url;
+          userData.dietary_control[key].name =
+            mealFound.food_recommendation.name;
+          userData.dietary_control[key].description =
+            mealFound.food_recommendation.description;
+        }
       } else {
         delete userData.dietary_control[key];
       }

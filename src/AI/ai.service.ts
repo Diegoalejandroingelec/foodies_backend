@@ -15,17 +15,24 @@ const { Storage } = require('@google-cloud/storage');
 export class ArtificialIntelligenceService {
   constructor() {}
 
+  cleanJsonString = (jsonString) => {
+    // Replace commas that are directly before a closing bracket or brace
+    return jsonString.replace(/,(?=\s*[}\]])/g, '');
+  };
+  addMissingCommas = (jsonString) => {
+    // Replace instances where a closing bracket or brace is followed by a new key without a comma in between
+    return jsonString.replace(/(\]|\})\s*(?="\w+":)/g, '$1,');
+  };
   // parse the text as json object from string
   jsonParser = (text) => {
     let json_text = text;
-
-    json_text = json_text.replace('\n', '');
+    json_text = this.cleanJsonString(json_text);
     json_text = json_text.replace('```JSON', '');
     json_text = json_text.replace('```json', '');
     json_text = json_text.replace('```', '');
     json_text = json_text.replace('JSON', '');
     json_text = json_text.replace('json', '');
-
+    json_text = this.addMissingCommas(json_text);
     // parse the text into a json object
     const obj = JSON.parse(json_text);
 
@@ -83,7 +90,7 @@ export class ArtificialIntelligenceService {
       avoidDishesText = `In addition it is extremelly important that the recommendations do not include these dishes: ${avoidDishes}`;
     }
 
-    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least one recommendations for my breakfast, at least one recommendations for my lunch, at least one recommendations for my dinner and at least one recommendations of snacks that I can eat between the main meals. ${avoidDishesText}`;
+    const msg = `Hello, I am ${age} years old, and I define myself as a ${gender}. My weight is ${weight} Kg and my height is ${height} cm. I cannot eat under any circumstance ${forbiddenFood}. I love eating ${favoriteFood}. Please consider this statement of mine: "${UserInformation}", recommend me the food that I should eat. Among your recommendations I need at least two recommendations for my breakfast, at least two recommendations for my lunch, at least two recommendations for my dinner and at least two recommendations of snacks that I can eat between the main meals. ${avoidDishesText}`;
 
     const result = await chat.sendMessage(msg);
     const response = result.response;
@@ -187,6 +194,7 @@ export class ArtificialIntelligenceService {
         method: 'GET',
         url: imageUrl,
         responseType: 'stream',
+        timeout: 10000,
       });
 
       const writer = response.data.pipe(fs.createWriteStream(localFilePath));
@@ -196,7 +204,7 @@ export class ArtificialIntelligenceService {
         writer.on('error', reject);
       });
     } catch (error) {
-      console.error('An error occurred while downloading the image:', error);
+      console.error('An error occurred while downloading the image');
       throw error;
     }
   };
@@ -207,7 +215,7 @@ export class ArtificialIntelligenceService {
     try {
       const response = await openai.images.generate({
         model: 'dall-e-2',
-        prompt,
+        prompt: `${prompt} and generate an aesthetic image for this dish.`,
         n: 1,
         size: '512x512',
         quality: 'standard',

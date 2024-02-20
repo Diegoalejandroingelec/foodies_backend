@@ -25,7 +25,9 @@ export class APIService {
           name: place.name,
           address: place.vicinity,
           rating: place.rating,
-          gmaps_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
+          gmaps_url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            place.name,
+          )}+${place.geometry.location.lat},${place.geometry.location.lng}`,
         };
       });
 
