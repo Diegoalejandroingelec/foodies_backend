@@ -45,29 +45,31 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Environment Setup
 
-```bash
-# unit tests
-$ npm run test
+To ensure the proper functioning of this application, you must create a `.env` file in the root directory of the project. This file should contain the following keys with your specific values:
 
-# e2e tests
-$ npm run test:e2e
+```plaintext
+# Path to your Firebase service account keys
+FIREBASE_SERVICE_ACCOUNT_PATH=<your_firebase_service_account_path>
 
-# test coverage
-$ npm run test:cov
+# Gemini API key
+GEMINI_API_KEY=<your_gemini_api_key>
+
+# Google Maps API key
+GOOGLE_MAPS_API_KEY=<your_google_maps_api_key>
+
+# Email address for sending messages
+EMAIL_ADDRESS=<your_email_address>
+
+# Password for the email address
+EMAIL_PASSWORD=<your_email_password>
+
+# OpenAI API key
+OPENAI_API_KEY=<your_openai_api_key>
+
+# Path to your Google Cloud Platform credentials
+GOOGLE_APPLICATION_CREDENTIALS=<your_gcp_credentials_path>
+
+Replace the placeholders (<...>) with your actual values. Ensure this file is kept secure and not shared publicly, as it contains sensitive information.
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
