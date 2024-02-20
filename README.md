@@ -37,7 +37,7 @@ Looking ahead, we plan to further elevate our backend services by adopting Googl
 ## RespFoodies Architecture
 
 <div align="center">
-   <img src="https://drive.google.com/file/d/1RmRXWAUxMpMFjTjRvczJt8gZ1L9RcMnd/view?usp=sharing" width="250">
+   <img src="https://lh3.googleusercontent.com/fife/AGXqzDmHWGLgAYrEg8GhFRkFen71LeCOhpFPr7H3fqnicwqXsbYMMtcGc5zVvsKEfVyxAnYfsdNtrTMN07AXKLzg_UgnXfWE_F2Vv1IrgLpwr03r-gVoKNJfHQcbLLXY4TIvWJ-5GeW11v62yNAvEfh1uGkcW96CC7cURDu_FfmdNhU9GIMH0h2VaDEgJuo5VxDSdvYvsDd1Guti3dTtrbPua--T8RJ98dT3ie87KTOYVC5EX4ZkSWWEi8FSy0Hb9ndYraCAM7B0o_8eNq2xM_ihFniAfOMRq3rD2vnN7gO7bQflKUzpm9drnM29TLRL_-PVrduLdKtHyNdW2v0JW-etMbvCP7FP_UxM_0qWIOAQZ9oCJxirjRNN3kf2ObDNJzWM6fDVXothep4InZUoG7RimRq2CE4rUd6GyV1uT8znTJ5XXnjUZr_JvaENuz8gHNEmYSoF2jlC2tJiYuiXxnergKYEtrYfPkUvq-JkmxLV8K6C26Z_yaiuTWYYZbGA340QzFzYCdc5KK3bqAKM65q8iJzAI36sC6q_K1FzXbUVpenOICBsac2vK20mihqv-LquXyNAjeTY7i2WRlp6UDqHIj7xIS_IU5asCu_PzAsGrKJHARB15JM5gvW-YvlfwWZTIvKvyPhCnNrnqcMylCvarXoZtU3IuMA1ON6l4DSPrbSByCu3EsLNNK1ruLg-2SC-nPizoypR6JCOhWJTrHph0uc7Cff79ihxWh82iuj7MwuBugSC0vBYzJ_QYkKuTlH9D73OjrDRFjkzEjmfuugEJvoDs7vJu63F_ghB3f0SYQOSorPuLloQniGJYTnfV_B2RrabDbKQb4w1Q5HxoHyZ_e1HNAoMn6bbZUqok29FFt1O1AlhvllW7P1MhpVBts0FPTG8U_UKJTy0k5VtnpjlsdV16S9jLzWNBexJoULjM-P0U__rRNTgpDxVdXXn7dDzMh0OJPs7zgRgd5LgZaNl8HpuSRnIwRs9BQNz8ygemZ088Pxv6P2f_dK41PgVjI3oct0eFUan0Rz2BmDm-9LcsRlr6KDNDfJDdMs-vWPDLzRME9AEjykIuKYUxhiGNQMmpirAUAoGNn6QgJrFuVr4hWJVov0OcnsJPCm3wH2IXEcfXrUb_tiCOhAXu06NDfRLjTEBznM3CjwOSGeJZWSunItt_9W13NkCEdWCcI6EPkdknlc7hUNrn5s5VLJfNRaz42DTRthYZRxYR12X63iZBY6WfvqcUD01I5UXutirDnWSbigC29y_JoFwXyqupGrTF_O-eYi0qJYwv0kbbrOHX3t5gG6gCFFyjqZSbjDYL92j1P0YTy52L6WpUFRjxb7M7I6AMtvqBKyY_E4HqKQHDChNMxTbaNDuwJE9ghC6Dij-ZiRODCCAn8oi-3E-p-7ssnP-1AsOsUyhDOkg6aH1Uc6hqvl870vzRNjWQY4frAu0ZU7GAwkwneK-56cupPOY8xm3Hu83bNiL3eCBF4tyusAs0sPPmnJvYc4ow-6UJ7lWKXrO1QNWmAE8-IMWL5bJeWIyQlVnmKoE=w1920-h878" width="250">
 </div>
 
 ## Installation
@@ -92,7 +92,7 @@ Replace the placeholders (<...>) with your actual values. Ensure this file is ke
 
 Resp Foodies is a collaborative project by the University of Technology Sydney GDSC team:
 
-1. [Fendy Lomanjaya](https://www.linkedin.com/in/fendy-lomanjaya)
-2. [Diego Alejandro Ramirez Vargas](https://www.linkedin.com/in/diegoalerami-vargas/)
+1. [Diego Alejandro Ramirez Vargas](https://www.linkedin.com/in/diegoalerami-vargas/)
+2. [Fendy Lomanjaya](https://www.linkedin.com/in/fendy-lomanjaya)
 3. [Sudarshan Kongkham](https://www.linkedin.com/in/shudarshan-kongkham-b86787196/)
 4. [Abdullah Bahri](https://www.linkedin.com/in/abdullah-bahr/)
